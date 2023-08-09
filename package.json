@@ -1,0 +1,14 @@
+{
+    "name": "page-default-directives",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "scripts": {
+        "version": "tsc"
+    },
+    "peerDependencies": {
+        "@acryps/page": "^1.0.0"
+    },
+    "devDependencies": {
+        "typescript": "^4.6.4"
+    }
+}
