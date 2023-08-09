@@ -1,5 +1,5 @@
 {
-    "name": "page-default-directives",
+    "name": "@acryps/page-default-directives",
     "version": "1.0.0",
     "main": "dist/index.js",
     "scripts": {
