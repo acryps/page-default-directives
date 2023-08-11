@@ -1,4 +1,4 @@
-import { HashRouter, PathRouter, Router } from "@acryps/page/dist/index";
+import { HashRouter, PathRouter, Router } from "@acryps/page/built/index";
 
 const getActiveURL = (router: Router, path: string) => {
 	switch (router.constructor) {
@@ -80,7 +80,7 @@ export function registerDirectives(Component, router: Router) {
 			}
 		}
 
-		router.addEventListener('onparameterchange', () => createLink());
+		router.addEventListener('parameterchange', () => createLink());
 	
 		createLink();
 	};
@@ -94,7 +94,7 @@ export function registerDirectives(Component, router: Router) {
 			}
 		}
 
-		router.addEventListener('onparameterchange', () => resolveActive());
+		router.addEventListener('parameterchange', () => resolveActive());
 	
 		resolveActive();
 	};
