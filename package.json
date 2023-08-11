@@ -1,6 +1,6 @@
 {
     "name": "@acryps/page-default-directives",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "built/index.js",
     "scripts": {
         "version": "tsc"
