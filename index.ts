@@ -1,4 +1,4 @@
-import { HashRouter, PathRouter, Router } from "@acryps/page/built/index";
+import { HashRouter, PathRouter, Router } from "@acryps/page";
 
 const getActiveURL = (router: Router, path: string) => {
 	switch (router.constructor) {
