@@ -1,4 +1,4 @@
-# default directives for @acrpys/page
+# default directives for @acryps/page
 provides basic directives for @acryps/page projects
 
 Usage: Call `registerDirectives(Component, router)` in your apps main, before using `router.host(...)`. 
