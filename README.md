@@ -14,6 +14,7 @@ Then use the directives in your components:
 
 ## Directives
 `ui-click`: Sets `onclick` handler and calls value when the element is clicked<br>
+`ui-click-text`: Replaces the text until the click handler is resolved<br>
 `ui-focus`: Attaches to `onfocus` and calls value when the element is focused
 
 `ui-href`: Uses `component.navigate` to navigate relative to the current component. Will open native links too, if the route is not found<br>

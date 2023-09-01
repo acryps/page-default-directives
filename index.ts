@@ -11,16 +11,18 @@ const getActiveURL = (router: Router, path: string) => {
 
 export function registerDirectives(Component, router: Router) {
 	Component.directives['ui-click'] = (element, value, tag, attributes) => {
-		const unresolvedClickElements = [];
+		let resolved = true;
 
 		element.onclick = async event => {
 			// Prevent click on awaiting button
-			if (unresolvedClickElements.includes(element)) {
+			if (!resolved) {
 				event.stopPropagation();
 				return;
 			}
 
-			unresolvedClickElements.push(element);
+			resolved = false;
+			element.setAttribute('ui-click-pending', '');
+
 			const text = attributes['ui-click-text'];
 
 			async function resolveClickHandler() {
@@ -29,7 +31,8 @@ export function registerDirectives(Component, router: Router) {
 				} catch (error) {
 					element.hostingComponent.onerror(error);
 				} finally {
-					unresolvedClickElements.splice(unresolvedClickElements.indexOf(element), 1);
+					element.removeAttribute('ui-click-pending');
+					resolved = true;
 				}
 			}
 
