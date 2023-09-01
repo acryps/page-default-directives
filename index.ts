@@ -10,31 +10,44 @@ const getActiveURL = (router: Router, path: string) => {
 }
 
 export function registerDirectives(Component, router: Router) {
-	Component.directives['ui-click'] = (element, value, tag, attributes) => element.onclick = async event => {
-		const text = attributes['ui-click-text'];
-		
-		if (text) {
-			const originalContent = element.textContent;
-			element.textContent = text;
-	
-			requestAnimationFrame(async () => {
+	Component.directives['ui-click'] = (element, value, tag, attributes) => {
+		const unresolvedClickElements = [];
+
+		element.onclick = async event => {
+			// Prevent click on awaiting button
+			if (unresolvedClickElements.includes(element)) {
+				event.stopPropagation();
+				return;
+			}
+
+			unresolvedClickElements.push(element);
+			const text = attributes['ui-click-text'];
+
+			async function resolveClickHandler() {
 				try {
 					await value(event);
 				} catch (error) {
 					element.hostingComponent.onerror(error);
+				} finally {
+					unresolvedClickElements.splice(unresolvedClickElements.indexOf(element), 1);
 				}
-	
-				element.textContent = originalContent;
-			});
-		} else {
-			try {
-				await value(event);
-			} catch (error) {
-				element.hostingComponent.onerror(error);
 			}
+
+			if (text) {
+				const originalContent = element.textContent;
+				element.textContent = text;
+		
+				requestAnimationFrame(async () => {
+					await resolveClickHandler();
+		
+					element.textContent = originalContent;
+				});
+			} else {
+				await resolveClickHandler();
+			}
+
+			event.stopPropagation();
 		}
-	
-		event.stopPropagation();
 	};
 
 	Component.directives['ui-focus'] = (element, value) => element.onfocus = event => {
