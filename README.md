@@ -6,7 +6,7 @@ Usage: Call `registerDirectives(Component, router)` in your apps main, before us
 Then use the directives in your components: 
 ```
 <ui-button ui-click={() => console.log("clicked!")}>
-    Click Me!
+	Click Me!
 </ui-button>
 
 <input $ui-value={this.somevariable} ui-change={() => console.log("set:", this.somevariable)}></input>

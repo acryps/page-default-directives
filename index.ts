@@ -217,5 +217,5 @@ export function registerDirectives(Component, router: Router) {
 				attributes['ui-change'] && attributes['ui-change'](element.value);
 			};
 		}
-	};    
+	};	
 }
