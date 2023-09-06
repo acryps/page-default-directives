@@ -212,7 +212,7 @@ export function registerDirectives(Component, router: Router) {
 				attributes['ui-change'] && attributes['ui-change'](+element.value);
 			};
 		} else {
-			element.value = accessor.get();
+			element.value = accessor.get() ?? '';
 			
 			element.onblur = () => {
 				accessor.set(element.value);
