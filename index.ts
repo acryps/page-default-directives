@@ -1,4 +1,4 @@
-import { HashRouter, PathRouter, Router } from "@acryps/page";
+import { ConstructedRoute, HashRouter, PathRouter, Router } from "@acryps/page";
 
 const getActiveURL = (router: Router, path: string) => {
 	switch (router.constructor) {
@@ -103,7 +103,21 @@ export function registerDirectives(Component, router: Router) {
 	
 	Component.directives['ui-href-active'] = (element, value, tag, attributes) => {
 		function resolveActive() {
-			if (router.getActivePath().startsWith(router.absolute(value === true ? attributes['ui-href'] : value, element.hostingComponent))) {
+			const activeRoute = router.getActiveRoute();
+			const elementPath = router.absolute(value === true ? attributes['ui-href'] : value, element.hostingComponent);
+			const elementRoute = router.getRoute(elementPath);
+
+			function hasMatch(activeRoute: ConstructedRoute, elementRoute: ConstructedRoute) {
+				if (activeRoute.path == elementRoute.path) {
+					return true;
+				} else if (activeRoute.parent) {
+					return hasMatch(activeRoute.parent, elementRoute);
+				} else {
+					return false;
+				}
+			}
+
+			if (hasMatch(activeRoute, elementRoute) && router.getActivePath().startsWith(elementPath)) {
 				element.setAttribute('ui-active', '');
 			} else {
 				element.removeAttribute('ui-active');
