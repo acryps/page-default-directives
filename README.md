@@ -6,7 +6,7 @@ Usage: Call `registerDirectives(Component, router)` in your apps main, before us
 Then use the directives in your components: 
 ```
 <ui-button ui-click={() => console.log("clicked!")}>
-    Click Me!
+	Click Me!
 </ui-button>
 
 <input $ui-value={this.somevariable} ui-change={() => console.log("set:", this.somevariable)}></input>
@@ -14,6 +14,7 @@ Then use the directives in your components:
 
 ## Directives
 `ui-click`: Sets `onclick` handler and calls value when the element is clicked<br>
+`ui-click-text`: Replaces the text until the click handler is resolved<br>
 `ui-focus`: Attaches to `onfocus` and calls value when the element is focused
 
 `ui-href`: Uses `component.navigate` to navigate relative to the current component. Will open native links too, if the route is not found<br>

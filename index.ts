@@ -1,4 +1,4 @@
-import { HashRouter, PathRouter, Router } from "@acryps/page";
+import { ConstructedRoute, HashRouter, PathRouter, Router } from "@acryps/page";
 
 const getActiveURL = (router: Router, path: string) => {
 	switch (router.constructor) {
@@ -10,31 +10,47 @@ const getActiveURL = (router: Router, path: string) => {
 }
 
 export function registerDirectives(Component, router: Router) {
-	Component.directives['ui-click'] = (element, value, tag, attributes) => element.onclick = async event => {
-		const text = attributes['ui-click-text'];
-		
-		if (text) {
-			const originalContent = element.textContent;
-			element.textContent = text;
-	
-			requestAnimationFrame(async () => {
+	Component.directives['ui-click'] = (element, value, tag, attributes) => {
+		let resolved = true;
+
+		element.onclick = async event => {
+			// Prevent click on awaiting button
+			if (!resolved) {
+				event.stopPropagation();
+				return;
+			}
+
+			resolved = false;
+			element.setAttribute('ui-click-pending', '');
+
+			const text = attributes['ui-click-text'];
+
+			async function resolveClickHandler() {
 				try {
 					await value(event);
 				} catch (error) {
 					element.hostingComponent.onerror(error);
+				} finally {
+					element.removeAttribute('ui-click-pending');
+					resolved = true;
 				}
-	
-				element.textContent = originalContent;
-			});
-		} else {
-			try {
-				await value(event);
-			} catch (error) {
-				element.hostingComponent.onerror(error);
 			}
+
+			if (text) {
+				const originalContent = element.textContent;
+				element.textContent = text;
+		
+				requestAnimationFrame(async () => {
+					await resolveClickHandler();
+		
+					element.textContent = originalContent;
+				});
+			} else {
+				await resolveClickHandler();
+			}
+
+			event.stopPropagation();
 		}
-	
-		event.stopPropagation();
 	};
 
 	Component.directives['ui-focus'] = (element, value) => element.onfocus = event => {
@@ -88,7 +104,21 @@ export function registerDirectives(Component, router: Router) {
 	
 	Component.directives['ui-href-active'] = (element, value, tag, attributes) => {
 		function resolveActive() {
-			if (router.getActivePath().startsWith(router.absolute(value === true ? attributes['ui-href'] : value, element.hostingComponent))) {
+			const activeRoute = router.getActiveRoute();
+			const elementPath = router.absolute(value === true ? attributes['ui-href'] : value, element.hostingComponent);
+			const elementRoute = router.getRoute(elementPath);
+
+			function hasMatch(activeRoute: ConstructedRoute, elementRoute: ConstructedRoute) {
+				if (activeRoute.path == elementRoute.path) {
+					return true;
+				} else if (activeRoute.parent) {
+					return hasMatch(activeRoute.parent, elementRoute);
+				} else {
+					return false;
+				}
+			}
+
+			if (hasMatch(activeRoute, elementRoute) && router.getActivePath().startsWith(elementPath)) {
 				element.setAttribute('ui-active', '');
 			} else {
 				element.removeAttribute('ui-active');
@@ -197,7 +227,7 @@ export function registerDirectives(Component, router: Router) {
 				attributes['ui-change'] && attributes['ui-change'](+element.value);
 			};
 		} else {
-			element.value = accessor.get();
+			element.value = accessor.get() ?? '';
 			
 			element.onblur = () => {
 				accessor.set(element.value);
@@ -205,5 +235,5 @@ export function registerDirectives(Component, router: Router) {
 				attributes['ui-change'] && attributes['ui-change'](element.value);
 			};
 		}
-	};    
+	};	
 }
