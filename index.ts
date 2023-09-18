@@ -57,8 +57,12 @@ export function registerDirectives(Component, router: Router) {
 				}
 			}
 
-			// will be executed before default browser link navigation. 
+			// will be executed before default browser link navigation.
 			element.onclick = event => {
+				// overwrites href default browser navigation
+				event.stopPropagation();
+				event.preventDefault();
+
 				if (!router.getRoute(path)) {
 					if (attributes['ui-href-target'] == 'blank') {
 						open(path);
@@ -74,9 +78,6 @@ export function registerDirectives(Component, router: Router) {
 				} else {
 					router.navigate(path);
 				}
-			
-				// overwrites href default browser navigation
-				event.stopPropagation();
 			}
 		}
 
