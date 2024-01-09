@@ -104,6 +104,7 @@ export function registerDirectives(Component, router: Router) {
 	
 	Component.directives['ui-href-active'] = (element, value, tag, attributes) => {
 		function resolveActive() {
+			const activePath = router.getActivePath();
 			const activeRoute = router.getActiveRoute();
 			const elementPath = router.absolute(value === true ? attributes['ui-href'] : value, element.hostingComponent);
 			const elementRoute = router.getRoute(elementPath);
@@ -118,7 +119,7 @@ export function registerDirectives(Component, router: Router) {
 				}
 			}
 
-			if (hasMatch(activeRoute, elementRoute) && router.getActivePath().startsWith(elementPath)) {
+			if (hasMatch(activeRoute, elementRoute) && (activePath == elementPath || activePath.startsWith(`${elementPath}/`))) {
 				element.setAttribute('ui-active', '');
 			} else {
 				element.removeAttribute('ui-active');
